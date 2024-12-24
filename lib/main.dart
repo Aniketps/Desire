@@ -61,8 +61,35 @@ void callbackDispatcher() {
     await Firebase.initializeApp();
     await Future.delayed(Duration(seconds: 10));
 
-    print("Executing background task: $taskName");
+    // Get the current date and time
     final now = DateTime.now();
+    final isMonday = now.weekday == DateTime.monday;
+    final isSunday = now.weekday == DateTime.sunday;
+
+    final prefs = await SharedPreferences.getInstance();
+    int totalPoints = prefs.getInt("TotalPoints") ?? 0;
+    // Ensure the points do not exceed 400
+    if (totalPoints > 400) {
+      totalPoints = 400;
+      await prefs.setInt("TotalPoints", totalPoints);
+      print("Points capped at 400. Current TotalPoints: $totalPoints.");
+    }
+
+    // Check if it's Sunday transitioning to Monday
+    if (isMonday) {
+      bool alreadyReset = prefs.getBool("AlreadyReset") ?? false;
+
+      if (!alreadyReset) {
+        await prefs.setInt("TotalPoints", 0);
+        await prefs.setBool("AlreadyReset", true);
+        print("Points reset to 0 because it's Monday.");
+      }
+    } else if (isSunday) {
+      // Prepare for the next week's reset
+      await prefs.setBool("AlreadyReset", false);
+    }
+
+    print("Executing background task: $taskName");
     if (taskName == "Save" && (now.hour == 0 || now.hour == 12)){
       final prefs = await SharedPreferences.getInstance();
       final lastExecutionDate = prefs.getString('lastExecutionDate');
@@ -86,7 +113,6 @@ void callbackDispatcher() {
     return Future.value(true);
   });
 }
-
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
