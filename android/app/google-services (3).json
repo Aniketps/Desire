@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "101671064485",
+    "project_id": "desire-b0903",
+    "storage_bucket": "desire-b0903.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:101671064485:android:eb87ea82ad14e41953ce4c",
+        "android_client_info": {
+          "package_name": "com.desire.desire"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOPxHZnzcOQzKQuIOBJthK7x0KepIuHbg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
