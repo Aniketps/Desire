@@ -83,16 +83,13 @@ Track progress with predefined exercises:
 ## 📂 **File Structure**  
 
 ```plaintext
-lib/
-├── main.dart             # Entry point
-├── screens/
-│   ├── login.dart        # User authentication
-│   ├── home.dart         # Dashboard with tasks & map
-│   ├── reformation.dart  # Customize workout targets
-│   └── scrolls.dart      # View daily records
-├── widgets/
-│   ├── task_card.dart    # Task details UI
-│   ├── map_view.dart     # Integrated maps
+lib/    
+├── firebase_options.dart
+├── home.dart
+├── home.dart      
+├── home.dart 
+├── reformation.dart  
+└── scrolls.dart     
 └── utils/
     ├── firebase_service.dart  # Firebase operations
     ├── location_service.dart  # Location tracking
