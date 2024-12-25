@@ -71,7 +71,7 @@ Track progress with predefined exercises:
 ## 📸 **App Previews**  
 
 ### **🔐 Login Screen**  
-![Login Screen](https://link_to_your_image.com/login_screen_image.jpg)  
+![Task Dashboard](https://drive.google.com/file/d/1-AiU4IoZ8bcamBkO9HEY-hqI_XCsj78v/view)
 
 ### **📍 Task Dashboard with Map**  
 ![Task Dashboard](https://link_to_your_image.com/task_dashboard_image.jpg)  
