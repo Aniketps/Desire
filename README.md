@@ -71,7 +71,7 @@ Track progress with predefined exercises:
 ## 📸 **App Previews**  
 
 ### **🔐 Login Screen**  
-![Login And Home]([https://drive.google.com/file/d/1-AiU4IoZ8bcamBkO9HEY-hqI_XCsj78v/view](https://github.com/Aniketps/Project-Images/blob/main/Screenshot%202024-12-25%20090237.png))
+![Login And Home](https://github.com/Aniketps/Project-Images/blob/main/Screenshot%202024-12-25%20090237.png)
 
 ### **📍 Task Dashboard with Map**  
 ![Change Goal and Penalty](https://github.com/Aniketps/Project-Images/blob/main/Screenshot%202024-12-25%20090254.png)  
