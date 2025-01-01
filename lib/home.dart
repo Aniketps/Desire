@@ -1,19 +1,15 @@
 import 'dart:math';
-import 'dart:math' as Math;
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:desire/penalty.dart';
 import 'package:desire/reformation.dart';
 import 'package:desire/scrolls.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:workmanager/workmanager.dart';
 
 final GlobalKey<_homeState> homeKey = GlobalKey<_homeState>();
 
@@ -58,7 +54,6 @@ class _homeState extends State<home> {
       } else if (today == 7) { // Sunday
         day = "Last";
       }
-      print("Today is the $day day of the week.");
     });
   }
 
@@ -71,28 +66,6 @@ class _homeState extends State<home> {
   Future<int> getPoints(String key) async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getInt(key) ?? 0; // Default to 0 if not found
-  }
-
-  void SaveToCloudDaily() {
-    FirebaseFirestore.instance.collection("Tasks").get().then((querySnapshot) async {
-      // Prepare data for "Scrolls" document
-      Map<String, dynamic> scrollsData = {
-        "Day": DateFormat('d MMM yyyy').format(DateTime.now())
-      };
-
-      for (var doc in querySnapshot.docs) {
-        String taskTitle = doc["Task"];
-        int points = (await getTask(taskTitle) && doc["Goal"] is String) ? int.parse(doc["Goal"]) : 0; // Check task completion status
-        scrollsData[taskTitle] = points;
-        saveTask(doc["Task"], false);
-      }
-      // Add the data to a single "Scrolls" document
-      FirebaseFirestore.instance.collection("Scrolls").add(scrollsData).then((docRef) {
-        print("Data added to 'Scrolls' with ID: ${docRef.id}");
-      }).catchError((error) {
-        print("Failed to add data: $error");
-      });
-    });
   }
 
   Future<void> getLegthOfData() async {
@@ -120,13 +93,13 @@ class _homeState extends State<home> {
 
   Timer? _timer;
   void _startAutoRefresh() {
-    _timer = Timer.periodic(Duration(seconds: 30), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 30), (timer) {
       getHeading();
       checkAccessLocation(currentLat, currentLong);
     });
   }
   void _startAutoRefreshLocation() {
-    _timer = Timer.periodic(Duration(seconds: 5), (timer) async {
+    _timer = Timer.periodic(const Duration(seconds: 5), (timer) async {
       Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
       setState(() {
         currentLat = position.latitude;
@@ -142,7 +115,7 @@ class _homeState extends State<home> {
           await FirebaseFirestore.instance.collection("Heading").get();
       if (querySnapshot.docs.isNotEmpty) {
         // Pick a random document from the available ones
-        int randomIndex = (querySnapshot.docs.length * (new Random()).nextDouble()).toInt();
+        int randomIndex = (querySnapshot.docs.length * (Random()).nextDouble()).toInt();
 
         Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
         setState(() {
@@ -160,7 +133,6 @@ class _homeState extends State<home> {
       }
     } catch (e) {
       setState(() {
-        print("The error is : $e");
         heading = "Error loading data";
       });
     }
@@ -262,7 +234,40 @@ class _homeState extends State<home> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? Center(
+            child: TweenAnimationBuilder(
+              tween: Tween(begin: 0.0, end: 1.0),
+              duration: const Duration(seconds: 5),
+              builder: (context, value, child) {
+                return Container(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Colors.blueAccent, Colors.purpleAccent],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(50),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.purpleAccent.withOpacity(0.5),
+                        spreadRadius: 4,
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  padding: const EdgeInsets.all(20),
+                  child: CircularProgressIndicator(
+                    value: value,
+                    strokeWidth: 10.0,
+                    valueColor: const AlwaysStoppedAnimation<Color>(
+                      Colors.white,
+                    ),
+                  ),
+                );
+              },
+            ),
+          )
           : GestureDetector(
               onTap: () {
                 if (isInfo) {
@@ -277,7 +282,7 @@ class _homeState extends State<home> {
                 child: Container(
                   height: MediaQuery.of(context).size.height,
                   width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     image: DecorationImage(
                       image: AssetImage(
                           "assets/main.jpg"), // Ensure the image exists in your assets folder
@@ -285,7 +290,7 @@ class _homeState extends State<home> {
                     ),
                   ),
                   child: Container(
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: Color(0x66010018), // Semi-transparent overlay
                     ),
                     child: Center(
@@ -297,22 +302,20 @@ class _homeState extends State<home> {
                               .center, // Center the content horizontally
                           children: [
                             Container(
-                              child: Container(
-                                width: MediaQuery.of(context).size.width * 0.9,
-                                padding: EdgeInsets.only(top: 50, right: 55),
-                                child: Text(
-                                  heading,
-                                  textAlign: TextAlign.start,
-                                  style: GoogleFonts.itim(
-                                    textStyle: TextStyle(
-                                      fontSize: 30,
-                                      color: Colors.white,
-                                    ),
+                              width: MediaQuery.of(context).size.width * 0.9,
+                              padding: const EdgeInsets.only(top: 50, right: 55),
+                              child: Text(
+                                heading,
+                                textAlign: TextAlign.start,
+                                style: GoogleFonts.itim(
+                                  textStyle: const TextStyle(
+                                    fontSize: 30,
+                                    color: Colors.white,
                                   ),
                                 ),
                               ),
                             ),
-                            SizedBox(height: 20),
+                            const SizedBox(height: 20),
                             // Space between text and container
                             Stack(
                               children: [
@@ -326,7 +329,7 @@ class _homeState extends State<home> {
                                         borderRadius: BorderRadius.circular(30),
                                         border: Border.all(
                                             width: 2,
-                                            color: Color(0x664300fb))),
+                                            color: const Color(0x664300fb))),
                                     child: Padding(
                                       padding: const EdgeInsets.all(30.0),
                                       child: SingleChildScrollView(
@@ -341,7 +344,7 @@ class _homeState extends State<home> {
                                                 Text(
                                                   "Todays Goals",
                                                   style: GoogleFonts.itim(
-                                                    textStyle: TextStyle(
+                                                    textStyle: const TextStyle(
                                                       color: Colors.white,
                                                     ),
                                                   ),
@@ -364,7 +367,7 @@ class _homeState extends State<home> {
                                                       return Text(
                                                         "${snapshot.data}/$RequiredTotalPonits",
                                                         style: GoogleFonts.itim(
-                                                          textStyle: TextStyle(
+                                                          textStyle: const TextStyle(
                                                             color: Colors.white,
                                                           ),
                                                         ),
@@ -373,7 +376,7 @@ class _homeState extends State<home> {
                                                       return Text(
                                                         "0/$RequiredTotalPonits",
                                                         style: GoogleFonts.itim(
-                                                          textStyle: TextStyle(
+                                                          textStyle: const TextStyle(
                                                             color: Colors.white,
                                                           ),
                                                         ),
@@ -383,7 +386,7 @@ class _homeState extends State<home> {
                                                 ),
                                               ],
                                             ),
-                                            Divider(
+                                            const Divider(
                                               color: Color(0xff9D8AFF),
                                             ),
                                             StreamBuilder(
@@ -457,7 +460,7 @@ class _homeState extends State<home> {
                                                                       style: GoogleFonts
                                                                           .itim(
                                                                         textStyle:
-                                                                            TextStyle(
+                                                                            const TextStyle(
                                                                           color:
                                                                               Colors.white,
                                                                         ),
@@ -474,7 +477,7 @@ class _homeState extends State<home> {
                                                                         GoogleFonts
                                                                             .itim(
                                                                       textStyle:
-                                                                          TextStyle(
+                                                                          const TextStyle(
                                                                         fontSize:
                                                                             8,
                                                                         color: Colors
@@ -483,14 +486,12 @@ class _homeState extends State<home> {
                                                                     ),
                                                                   ),
                                                                   Text(
-                                                                    "+" +
-                                                                        task['Goal']
-                                                                            .toString(),
+                                                                    "+${task['Goal']}",
                                                                     style:
                                                                         GoogleFonts
                                                                             .itim(
                                                                       textStyle:
-                                                                          TextStyle(
+                                                                          const TextStyle(
                                                                         color: Colors
                                                                             .white,
                                                                       ),
@@ -500,7 +501,7 @@ class _homeState extends State<home> {
                                                               )
                                                             ],
                                                           ),
-                                                          Divider(
+                                                          const Divider(
                                                             color: Color(
                                                                 0xff9D8AFF),
                                                           ),
@@ -509,13 +510,13 @@ class _homeState extends State<home> {
                                                     }).toList(),
                                                   );
                                                 } else {
-                                                  return Center(
+                                                  return const Center(
                                                       child:
                                                           CircularProgressIndicator());
                                                 }
                                               },
                                             ),
-                                            SizedBox(
+                                            const SizedBox(
                                               height: 15,
                                             ),
                                             Row(
@@ -526,7 +527,7 @@ class _homeState extends State<home> {
                                                 Text(
                                                   "Penalty",
                                                   style: GoogleFonts.itim(
-                                                    textStyle: TextStyle(
+                                                    textStyle: const TextStyle(
                                                       color: Colors.white,
                                                     ),
                                                   ),
@@ -534,20 +535,20 @@ class _homeState extends State<home> {
                                                 Text(
                                                   "60₹",
                                                   style: GoogleFonts.itim(
-                                                    textStyle: TextStyle(
+                                                    textStyle: const TextStyle(
                                                       color: Colors.white,
                                                     ),
                                                   ),
                                                 )
                                               ],
                                             ),
-                                            SizedBox(
+                                            const SizedBox(
                                               height: 15,
                                             ),
                                             Text(
                                               "$day day of week",
                                               style: GoogleFonts.itim(
-                                                textStyle: TextStyle(
+                                                textStyle: const TextStyle(
                                                   color: Colors.white,
                                                 ),
                                               ),
@@ -569,12 +570,12 @@ class _homeState extends State<home> {
                                                     .width *
                                                 0.75,
                                             decoration: BoxDecoration(
-                                              color: Color(0xB3000000),
+                                              color: const Color(0xB3000000),
                                               borderRadius:
                                                   BorderRadius.circular(20),
                                               border: Border.all(
                                                   width: 2,
-                                                  color: Color(0x664300fb)),
+                                                  color: const Color(0x664300fb)),
                                             ),
                                             child: Center(
                                               child: Padding(
@@ -582,9 +583,9 @@ class _homeState extends State<home> {
                                                     const EdgeInsets.all(30.0),
                                                 child: Text(
                                                   textAlign: TextAlign.center,
-                                                  "$Info",
+                                                  Info,
                                                   style: GoogleFonts.itim(
-                                                    textStyle: TextStyle(
+                                                    textStyle: const TextStyle(
                                                         color: Colors.white),
                                                   ),
                                                 ),
@@ -596,7 +597,7 @@ class _homeState extends State<home> {
                                     : Container()
                               ],
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 20,
                             ),
                             Container(
@@ -605,7 +606,7 @@ class _homeState extends State<home> {
                                   color: Colors.black45,
                                   borderRadius: BorderRadius.circular(30),
                                   border: Border.all(
-                                      width: 2, color: Color(0x664300fb))),
+                                      width: 2, color: const Color(0x664300fb))),
                               child: Padding(
                                 padding: const EdgeInsets.only(
                                     top: 20, bottom: 20, left: 30.0, right: 30),
@@ -632,12 +633,12 @@ class _homeState extends State<home> {
                                       child: Text(
                                         "Reformation",
                                         style: GoogleFonts.itim(
-                                          textStyle: TextStyle(
+                                          textStyle: const TextStyle(
                                               color: Color(0xffB098FF)),
                                         ),
                                       ),
                                     ),
-                                    Divider(
+                                    const Divider(
                                       color: Color(0xff9D8AFF),
                                     ),
                                     InkWell(
@@ -651,7 +652,7 @@ class _homeState extends State<home> {
                                       child: Text(
                                         "Scrolls",
                                         style: GoogleFonts.itim(
-                                          textStyle: TextStyle(
+                                          textStyle: const TextStyle(
                                               color: Color(0xffB098FF)),
                                         ),
                                       ),

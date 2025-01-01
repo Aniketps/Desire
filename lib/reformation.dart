@@ -27,19 +27,19 @@ class _reformation extends State<reformation> {
     });
   }
   List<DropdownMenuItem<dynamic>> targetList = [
-    DropdownMenuItem(
+    const DropdownMenuItem(
       value: "Push Ups",
       child: Text("Push Ups"),
     ),
-    DropdownMenuItem(
+    const DropdownMenuItem(
       value: "Squeats",
       child: Text("Stretches"),
     ),
-    DropdownMenuItem(
+    const DropdownMenuItem(
       value: "Sit Ups",
       child: Text("Sit Ups"),
     ),
-    DropdownMenuItem(
+    const DropdownMenuItem(
       value: "Run (Km)",
       child: Text("Run (Km)"),
     ),
@@ -48,13 +48,13 @@ class _reformation extends State<reformation> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               scrollDirection: Axis.vertical,
               child: Container(
                 height: MediaQuery.of(context).size.height,
                 width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage(
                         "assets/main.jpg"), // Ensure the image exists in your assets folder
@@ -62,7 +62,7 @@ class _reformation extends State<reformation> {
                   ),
                 ),
                 child: Container(
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Color(0x66010018), // Semi-transparent overlay
                   ),
                   child: Center(
@@ -72,21 +72,19 @@ class _reformation extends State<reformation> {
                           .center, // Center the content horizontally
                       children: [
                         Container(
-                          child: Container(
-                            padding: EdgeInsets.only(top: 50),
-                            child: Text(
-                              "Goal Modifications",
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.itim(
-                                textStyle: TextStyle(
-                                  fontSize: 30,
-                                  color: Colors.white,
-                                ),
+                          padding: const EdgeInsets.only(top: 50),
+                          child: Text(
+                            "Goal Modifications",
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.itim(
+                              textStyle: const TextStyle(
+                                fontSize: 30,
+                                color: Colors.white,
                               ),
                             ),
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                             height: 20), // Space between text and container
                         Container(
                           height: 450,
@@ -95,7 +93,7 @@ class _reformation extends State<reformation> {
                               color: Colors.black45,
                               borderRadius: BorderRadius.circular(30),
                               border: Border.all(
-                                  width: 2, color: Color(0x664300fb))),
+                                  width: 2, color: const Color(0x664300fb))),
                           child: Padding(
                             padding: const EdgeInsets.all(30.0),
                             child: Column(
@@ -111,14 +109,14 @@ class _reformation extends State<reformation> {
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                SizedBox(height: 10), // Add spacing
+                                const SizedBox(height: 10), // Add spacing
 
                                 // Dropdown Button
                                 StreamBuilder<QuerySnapshot>(
                                   stream: FirebaseFirestore.instance.collection("Tasks").snapshots(),
                                   builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                                     if (snapshot.connectionState == ConnectionState.waiting) {
-                                      return Center(child: CircularProgressIndicator());
+                                      return const Center(child: CircularProgressIndicator());
                                     }
 
                                     if (snapshot.hasData && !snapshot.hasError) {
@@ -135,7 +133,7 @@ class _reformation extends State<reformation> {
                                         hint: Text(
                                           "Select",
                                           style: GoogleFonts.itim(
-                                            textStyle: TextStyle(color: Colors.white),
+                                            textStyle: const TextStyle(color: Colors.white),
                                           ),
                                         ),
                                         onChanged: (value) {
@@ -149,7 +147,7 @@ class _reformation extends State<reformation> {
                                         borderRadius: BorderRadius.circular(20),
                                       );
                                     } else {
-                                      return Center(child: Text("No data available"));
+                                      return const Center(child: Text("No data available"));
                                     }
                                   },
                                 ),
@@ -158,7 +156,7 @@ class _reformation extends State<reformation> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     // First TextField
-                                    Container(
+                                    SizedBox(
                                       height: 40,
                                       width: MediaQuery.of(context).size.width *
                                           0.45,
@@ -166,32 +164,32 @@ class _reformation extends State<reformation> {
                                         controller: Target,
                                         enabled: false,
                                         style: GoogleFonts.itim(
-                                          textStyle: TextStyle(color: Colors.white),
+                                          textStyle: const TextStyle(color: Colors.white),
                                         ),
                                         decoration: InputDecoration(
                                           hintText: SelectedTarget,
-                                          hintStyle: TextStyle(color: Colors.white54),
-                                          enabledBorder: UnderlineInputBorder( // Bottom border when not focused
+                                          hintStyle: const TextStyle(color: Colors.white54),
+                                          enabledBorder: const UnderlineInputBorder( // Bottom border when not focused
                                             borderSide: BorderSide(color: Color(0xff9D8AFF), width: 1.5),
                                           ),
-                                          focusedBorder: UnderlineInputBorder( // Bottom border when focused
+                                          focusedBorder: const UnderlineInputBorder( // Bottom border when focused
                                             borderSide: BorderSide(color: Color(0xff9D8AFF), width: 2.0),
                                           ),
-                                          border: UnderlineInputBorder( // Default border
+                                          border: const UnderlineInputBorder( // Default border
                                             borderSide: BorderSide(color: Color(0xff9D8AFF)),
                                           ),
-                                          disabledBorder: UnderlineInputBorder( // Default border
+                                          disabledBorder: const UnderlineInputBorder( // Default border
                                             borderSide: BorderSide(color: Color(0xff9D8AFF)),
                                           ),
                                         ),
                                       ),
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                         width:
                                             10), // Spacing between TextFields
 
                                     // Second TextField
-                                    Container(
+                                    SizedBox(
                                       height: 40,
                                       width: MediaQuery.of(context).size.width *
                                           0.12,
@@ -210,22 +208,22 @@ class _reformation extends State<reformation> {
                                           }
                                         },
                                         controller: TargetGoal,
-                                        keyboardType: TextInputType.numberWithOptions(),
+                                        keyboardType: const TextInputType.numberWithOptions(),
                                         textAlign: TextAlign.start, // Aligns text to the right
                                         style: GoogleFonts.itim(
-                                          textStyle: TextStyle(color: Colors.white),
+                                          textStyle: const TextStyle(color: Colors.white),
                                         ),
                                         decoration: InputDecoration(
                                           prefixText: "+",
                                           hintText: SelectedTargetGoal,
-                                          hintStyle: TextStyle(color: Colors.white54),
-                                          enabledBorder: UnderlineInputBorder( // Bottom border when not focused
+                                          hintStyle: const TextStyle(color: Colors.white54),
+                                          enabledBorder: const UnderlineInputBorder( // Bottom border when not focused
                                             borderSide: BorderSide(color: Color(0xff9D8AFF), width: 1.5),
                                           ),
-                                          focusedBorder: UnderlineInputBorder( // Bottom border when focused
+                                          focusedBorder: const UnderlineInputBorder( // Bottom border when focused
                                             borderSide: BorderSide(color: Color(0xff9D8AFF), width: 2.0),
                                           ),
-                                          border: UnderlineInputBorder( // Default border
+                                          border: const UnderlineInputBorder( // Default border
                                             borderSide: BorderSide(color: Color(0xff9D8AFF)),
                                           ),
                                         ),
@@ -233,7 +231,7 @@ class _reformation extends State<reformation> {
                                     ),
                                   ],
                                 ),
-                                SizedBox(height: 10), // Add spacing
+                                const SizedBox(height: 10), // Add spacing
 
                                 // Inspirational Quote
                                 Padding(

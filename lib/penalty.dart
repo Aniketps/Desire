@@ -48,7 +48,7 @@ class _penalty extends State<penalty> {
       if (permission == LocationPermission.whileInUse ||
           permission == LocationPermission.always) {
         positionStream = Geolocator.getPositionStream(
-          locationSettings: LocationSettings(
+          locationSettings: const LocationSettings(
             accuracy: LocationAccuracy.high,
             distanceFilter: 10,
           ),
@@ -62,7 +62,7 @@ class _penalty extends State<penalty> {
         setState(() {
           isLoading = false;
         });
-        print("Location permission denied");
+        Fluttertoast.showToast(msg: "Location permission denied");
       }
     });
   }
@@ -71,26 +71,26 @@ class _penalty extends State<penalty> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               scrollDirection: Axis.vertical,
               child: Container(
                 height: MediaQuery.of(context).size.height,
                 width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage("assets/main.jpg"),
                     fit: BoxFit.cover,
                   ),
                 ),
                 child: Container(
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Color(0x66010018),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 50),
                         child: Text(
@@ -119,7 +119,7 @@ class _penalty extends State<penalty> {
         borderRadius: BorderRadius.circular(30),
         border: Border.all(
           width: 2,
-          color: Color(0x664300fb),
+          color: const Color(0x664300fb),
         ),
       ),
       child: Padding(
@@ -172,21 +172,21 @@ class _penalty extends State<penalty> {
   Widget _buildTextField(String hint) {
     return TextField(
       style: GoogleFonts.itim(
-        textStyle: TextStyle(color: Colors.white),
+        textStyle: const TextStyle(color: Colors.white),
       ),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: TextStyle(color: Colors.white54),
-        enabledBorder: UnderlineInputBorder(
+        hintStyle: const TextStyle(color: Colors.white54),
+        enabledBorder: const UnderlineInputBorder(
           borderSide: BorderSide(color: Color(0xff9D8AFF), width: 1.5),
         ),
-        focusedBorder: UnderlineInputBorder(
+        focusedBorder: const UnderlineInputBorder(
           borderSide: BorderSide(color: Color(0xff9D8AFF), width: 2.0),
         ),
-        border: UnderlineInputBorder(
+        border: const UnderlineInputBorder(
           borderSide: BorderSide(color: Color(0xff9D8AFF)),
         ),
-        disabledBorder: UnderlineInputBorder(
+        disabledBorder: const UnderlineInputBorder(
           borderSide: BorderSide(color: Color(0xff9D8AFF)),
         ),
       ),
@@ -206,7 +206,7 @@ class _penalty extends State<penalty> {
             ),
           ),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Container(
           height: 200,
           width: MediaQuery.of(context).size.width * 0.86,
@@ -215,7 +215,7 @@ class _penalty extends State<penalty> {
             borderRadius: BorderRadius.circular(30),
             border: Border.all(
               width: 2,
-              color: Color(0x664300fb),
+              color: const Color(0x664300fb),
             ),
           ),
           child: Padding(
@@ -225,14 +225,14 @@ class _penalty extends State<penalty> {
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
                   width: 2,
-                  color: Color(0x664300fb),
+                  color: const Color(0x664300fb),
                 ),
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
                 child: FlutterMap(
                   options: MapOptions(
-                    center: currentLocation ?? LatLng(0, 0),
+                    center: currentLocation ?? const LatLng(0, 0),
                     zoom: 14.0,
                     onLongPress: (tapPosition, point) async {
                       double offset = 0.003;
@@ -285,7 +285,7 @@ class _penalty extends State<penalty> {
                     TileLayer(
                       urlTemplate:
                       'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      subdomains: ['a', 'b', 'c'],
+                      subdomains: const ['a', 'b', 'c'],
                     ),
                     PolylineLayer(
                       polylines: [
@@ -300,8 +300,8 @@ class _penalty extends State<penalty> {
                     MarkerLayer(
                       markers: [
                         Marker(
-                          point: currentLocation ?? LatLng(0, 0),
-                          child: Icon(Icons.location_history),
+                          point: currentLocation ?? const LatLng(0, 0),
+                          child: const Icon(Icons.location_history),
                         ),
                       ],
                     ),
