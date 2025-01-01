@@ -532,7 +532,7 @@ class _homeState extends State<home> {
                                                   ),
                                                 ),
                                                 Text(
-                                                  "100₹",
+                                                  "60₹",
                                                   style: GoogleFonts.itim(
                                                     textStyle: TextStyle(
                                                       color: Colors.white,
@@ -641,10 +641,6 @@ class _homeState extends State<home> {
                                       color: Color(0xff9D8AFF),
                                     ),
                                     InkWell(
-                                      onLongPress: () {
-                                        Workmanager().cancelAll();
-                                        Fluttertoast.showToast(msg: "Canceled");
-                                      },
                                       onTap: () {
                                         Navigator.push(
                                             context,

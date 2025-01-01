@@ -1,6 +1,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -10,12 +11,13 @@ import 'package:workmanager/workmanager.dart';
 import 'package:intl/intl.dart';
 import 'home.dart';
 
+
 // Save task data to Firestore
-void SaveToCloudDaily() async {
+Future<void> SaveToCloudDaily() async {
   try {
-    print("Hello");
+    WidgetsFlutterBinding.ensureInitialized();
+    await Firebase.initializeApp();
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection("Tasks").get();
-    print("Hello");
 
     Map<String, dynamic> scrollsData = {
       "Day": DateFormat('d MMM yyyy').format(DateTime.now()),
@@ -32,10 +34,10 @@ void SaveToCloudDaily() async {
 
     // Add the data to a single "Scrolls" document
     await FirebaseFirestore.instance.collection("Scrolls").add(scrollsData);
-    print("Data successfully added to 'Scrolls'.");
-    Fluttertoast.showToast(msg: "Uploaded");
+
+    Fluttertoast.showToast(msg: "Goals recorded successfully");
   } catch (error) {
-    print("Failed to save data to Firestore: $error");
+    Fluttertoast.showToast(msg: "There is a problem with cloud connection");
   }
 }
 
@@ -57,10 +59,6 @@ Future<dynamic> getTask(String key) async {
 // Background task dispatcher
 void callbackDispatcher() {
   Workmanager().executeTask((taskName, inputData) async {
-    WidgetsFlutterBinding.ensureInitialized();
-    await Firebase.initializeApp();
-    await Future.delayed(Duration(seconds: 10));
-
     // Get the current date and time
     final now = DateTime.now();
     final isMonday = now.weekday == DateTime.monday;
@@ -72,7 +70,6 @@ void callbackDispatcher() {
     if (totalPoints > 400) {
       totalPoints = 400;
       await prefs.setInt("TotalPoints", totalPoints);
-      print("Points capped at 400. Current TotalPoints: $totalPoints.");
     }
 
     // Check if it's Sunday transitioning to Monday
@@ -82,34 +79,31 @@ void callbackDispatcher() {
       if (!alreadyReset) {
         await prefs.setInt("TotalPoints", 0);
         await prefs.setBool("AlreadyReset", true);
-        print("Points reset to 0 because it's Monday.");
+        Fluttertoast.showToast(msg: "Points has been reset");
       }
     } else if (isSunday) {
       // Prepare for the next week's reset
       await prefs.setBool("AlreadyReset", false);
     }
 
-    print("Executing background task: $taskName");
     if (taskName == "Save" && (now.hour == 0 || now.hour == 12)){
       final prefs = await SharedPreferences.getInstance();
       final lastExecutionDate = prefs.getString('lastExecutionDate');
-      final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+      final today = DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 1)));
 
       if (lastExecutionDate != today) {
         // Execute task only if it hasn't been run today
-        print("Running SaveToCloudDaily for $today.");
-        SaveToCloudDaily();
-
+      try {
+        await SaveToCloudDaily();
+      } catch (e) {
+        Fluttertoast.showToast(msg: "Something happened while recording goals");
+      }
         // Update last execution date
         await prefs.setString('lastExecutionDate', today);
       } else {
-        print("Task already executed today. Skipping...");
       }
-    }else{
-      print("Its not time to save");
-      print(now.hour);
     }
-    await Future.delayed(Duration(seconds: 10));
+    await Future.delayed(const Duration(seconds: 10));
     return Future.value(true);
   });
 }
@@ -120,7 +114,7 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  Workmanager().initialize(callbackDispatcher);
+  Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
   runApp(const MyApp());
 }
 
@@ -155,6 +149,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    getLiveCoordinates();
     Workmanager().registerPeriodicTask(
       "DailySave", // Unique task name
       "Save",      // Task identifier
@@ -172,7 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (!serviceEnabled) {
       showAlertDialog(
         "Location Services Disabled",
-        "Location services are required for this app to function properly. Please enable them in your device settings.",
+        "Location services are required for this app to function properly. Please enable them in your device settings and restart application.",
       );
       getLiveCoordinates();
     }
@@ -230,36 +225,36 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Container(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage("assets/Lock.jpg"), // Corrected asset path with file extension
             fit: BoxFit.cover, // Ensures the image covers the entire container
           ),
         ),
         child: Center(
-          child: Container(
+          child: SizedBox(
             height: 80,
             child: Column(
               children: [
-                Container(
+                SizedBox(
                   height: 50,
                   width: MediaQuery.of(context).size.width * 0.8,
                   child: TextField(
                     obscureText: true,
                     decoration: InputDecoration(
                       hintText: 'Who is your desire?',
-                      hintStyle: TextStyle(color: Colors.white), // Text color for the hint
-                      fillColor: Color(0xFF330867), // Fill color
+                      hintStyle: const TextStyle(color: Colors.white), // Text color for the hint
+                      fillColor: const Color(0xFF330867), // Fill color
                       filled: true, // Enables fill color
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(50), // Border radius
-                        borderSide: BorderSide(color: Colors.white),
+                        borderSide: const BorderSide(color: Colors.white),
                         // Border color
                       ),
-                      contentPadding: EdgeInsets.only(left: 25), // Padding from the left for input text
+                      contentPadding: const EdgeInsets.only(left: 25), // Padding from the left for input text
                     ),
                     style: GoogleFonts.itim(
-                        textStyle: TextStyle(color: Colors.white),
+                        textStyle: const TextStyle(color: Colors.white),
                     ), // Text color for entered text
                     onChanged: (value) {
                       if(value=="isnam"){
@@ -271,7 +266,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 Text("In reverse order", style: GoogleFonts.itim(
-                  textStyle: TextStyle(color: Color(0xffA392FF), fontSize: 12),
+                  textStyle: const TextStyle(color: Color(0xffA392FF), fontSize: 12),
                 )),
               ],
             ),

@@ -51,6 +51,7 @@ dependencies:
   latlong2: ^0.9.0
   app_settings: ^5.1.1
   workmanager: ^0.5.2
+  disable_battery_optimization: ^1.1.1
 
 dev_dependencies:
   flutter_test:
